@@ -1,0 +1,25 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action="SalahTimes">
+Enter latitude: <input type="text" name="lat"> <br>
+Enter longitude: <input type="text" name="long"> <br>
+Enter Time zone difference: <input type="text" name="timezone"> <br>
+
+Enter Daylight savings: <input type="text" name="dst"> <br>
+
+For a Day <input type="radio" name="choice" id="day" value="day" >
+Week <input type="radio" name="choice" id="week" value="week">
+Month <input type="radio" name="choice" id="month" value="month">
+
+<! -- Enter Monthwise: <input type="text" name="is_month"> <br>
+<! -- Enter Day wise: <input type="text" name="is_day"> <br>
+<! --Enter Weekwise savings: <input type="text" name="is_week"> <br>
+
+Select date: <input type="date" name="SalahDate" >
+<input type="submit">
+</form>
+
+{% endblock %}
