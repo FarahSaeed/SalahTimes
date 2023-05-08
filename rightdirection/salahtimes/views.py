@@ -76,25 +76,53 @@ def add(request):
 
 
 def SalahTimes(request):
-    from datetime import datetime, timedelta
+
+    from datetime import datetime, timedelta 
+    gc = geonamescache.GeonamesCache()
     lat = request.GET['lat']
     long = request.GET['long']
     cityvalue = str(request.GET['cityvalue'])
     countryvalue = str(request.GET['countryvalue'])
+    
+    calc_method = str(request.GET['calc_method'])
+    countries = gc.get_countries()
+
+
 
     if cityvalue != '0' and countryvalue != '0':
-        gc = geonamescache.GeonamesCache()
+        
         cities = gc.get_cities()
         print(cities[cityvalue])
         lat = cities[cityvalue]['latitude']
         long = cities[cityvalue]['longitude']
+        country = countries[countryvalue]['name']
+        print(country)
 
 
     elif lat != '' and long != '':
         lat = float(lat)
         long = float(long)
+        ############################## get country name given coordinates (lat, long)
+        from geopy.geocoders import Nominatim
 
-
+        geolocator = Nominatim(user_agent="foo_bar")
+        coordinates = (lat, long)
+        location = geolocator.reverse(coordinates, language = 'en')
+        country = location.address.split(',')[-1]
+        print(country)
+        ###############################
+    country = country.strip()
+    if calc_method == "Most appropriate":
+        if country in ['Antigua and Barbuda','Canada','United States']:
+            calc_method = 'ISNA'
+        elif country in ['Bahrain','Jordan','Kuwait','Oman','Qatar','Saudi Arabia','Syria','United Arab Emirates','Yemen']:
+            calc_method = 'Makkah'
+        elif country in ['Côte d\'Ivoire', 'Ivory Coast','Egypt','Libya', 'Nigeria', 'Sudan']:
+            calc_method = 'Egypt'
+        elif country in ['Bangladesh','India','Pakistan', 'Afghanistan']:
+            calc_method = 'Karachi'
+        else: calc_method = 'MWL'
+        
 
     #timezone = int(request.GET['timezone'])
     print("###################", get_gmt_diff(lat, long) )
@@ -108,7 +136,8 @@ def SalahTimes(request):
 
     SalahDate = str(request.GET['SalahDate'])
     SalahDate = datetime.strptime(SalahDate,'%Y-%m-%d').date()
-    prayTimes = functionality.PrayTimes()
+    print("################################# calc_method:", calc_method)
+    prayTimes = functionality.PrayTimes(method = calc_method)
 
  
     times = prayTimes.getTimes(SalahDate, (lat, long), timezone, dst); # date.today(), 33.9519, -83.3576, -5 1
@@ -243,5 +272,104 @@ def load_states(request):
     data = {'0':httpstr, '1': states}
 
     return JsonResponse(json.dumps({'cities': httpstr}),safe=False)
+
+
+def athenshome(request):
+
+    from datetime import datetime, timedelta 
+    gc = geonamescache.GeonamesCache()
+    lat = 33.950001
+    long = -83.383331
+    cityvalue = '0'
+    countryvalue = '0'
+    
+    calc_method = 'ISNA'
+    countries = gc.get_countries()
+
+
+
+    if cityvalue != '0' and countryvalue != '0':
+        
+        cities = gc.get_cities()
+        print(cities[cityvalue])
+        lat = cities[cityvalue]['latitude']
+        long = cities[cityvalue]['longitude']
+        country = countries[countryvalue]['name']
+        print(country)
+
+
+    elif lat != '' and long != '':
+        lat = float(lat)
+        long = float(long)
+        ############################## get country name given coordinates (lat, long)
+        from geopy.geocoders import Nominatim
+
+        geolocator = Nominatim(user_agent="foo_bar")
+        coordinates = (lat, long)
+        location = geolocator.reverse(coordinates, language = 'en')
+        country = location.address.split(',')[-1]
+        print(country)
+        ###############################
+    country = country.strip()
+    if calc_method == "Most appropriate":
+        if country in ['Antigua and Barbuda','Canada','United States']:
+            calc_method = 'ISNA'
+        elif country in ['Bahrain','Jordan','Kuwait','Oman','Qatar','Saudi Arabia','Syria','United Arab Emirates','Yemen']:
+            calc_method = 'Makkah'
+        elif country in ['Côte d\'Ivoire', 'Ivory Coast','Egypt','Libya', 'Nigeria', 'Sudan']:
+            calc_method = 'Egypt'
+        elif country in ['Bangladesh','India','Pakistan', 'Afghanistan']:
+            calc_method = 'Karachi'
+        else: calc_method = 'MWL'
+        
+
+    #timezone = int(request.GET['timezone'])
+    print("###################", get_gmt_diff(lat, long) )
+    timezone = get_gmt_diff(lat, long)
+    dst = 0 #int(request.GET['dst'])
+
+    #dst = int(request.GET['is_day'])
+    #is_week = int(request.GET['is_week'])
+    #is_month = int(request.GET['is_month'])
+
+    from datetime import date
+    SalahDate = datetime.strftime(date.today(),'%Y-%m-%d') #str(request.GET['SalahDate'])
+    SalahDate = datetime.strptime(SalahDate,'%Y-%m-%d').date()
+    print("################################# calc_method:", calc_method)
+    prayTimes = functionality.PrayTimes(method = calc_method)
+
+ 
+    times = prayTimes.getTimes(SalahDate, (lat, long), timezone, dst); # date.today(), 33.9519, -83.3576, -5 1
+    data = pd.DataFrame(times, index=[0]).to_html(index_names=False, escape=False)
+ 
+    times_dict = defaultdict(list)
+    choice = 'week'
+
+    d1 = {}
+    if choice == 'week':
+
+        for i in range(7):
+            times = prayTimes.getTimes(SalahDate+ timedelta(days=i), (lat, long), timezone, dst);
+            times['date'] = SalahDate+ timedelta(days=i)
+
+            for key, value in times.items():
+                times_dict[key].append(value)
+
+        data = pd.DataFrame(times_dict, index=list(range(7))).to_html(index_names=False, escape=False)
+
+
+    elif choice == 'month': #is_month == 1:
+
+        for i in range(30):
+            times = prayTimes.getTimes(SalahDate+ timedelta(days=i), (lat, long), timezone, dst);
+            times['date'] = SalahDate+ timedelta(days=i)
+
+            for key, value in times.items():
+                times_dict[key].append(value)
+
+        data = pd.DataFrame(times_dict, index=list(range(30))).to_html(index_names=False, escape=False)
+
+
+    return render(request, 'result.html', {'result':data})
 
 

@@ -7,7 +7,7 @@
 
 
 
-<div style="width: 50%; background-color:  blue; float:left;">
+<div style="width: 40%; background-color:  blue; float:left;">
 
 Select Country: (or enter location coordinates below.)
 <select id="country" name="countryvalue" >
@@ -31,23 +31,33 @@ Select City: (or enter location coordinates below.)
 </select>
 
 </div>
-<div style="width: 25%;  background-color: red; float:left;">
+<div style="width: 5%;  background-color: red; float:left;">
 <p> OR </p>
 </div>
 
-<div style="width: 25%;  background-color: pink; float:right;">
+<div style="width: 25%;  background-color: pink; float:left;">
 
 Enter latitude: <input type="text" name="lat"> <br>
 Enter longitude: <input type="text" name="long"> <br>
 
 </div>
 
-
-
-
 <br/>
 <br/>
 <br/>
+<br>
+<div style="margin: auto; width: 20%; background-color: grey;  ">
+
+Calcualtion method
+<select id="calc_method" name="calc_method">
+<option value="Most appropriate" selected> Most appropriate </option>
+<option value="Karachi" > Karachi </option>
+<option value="ISNA" > ISNA </option>
+<option value="MWL" > MWL </option>
+<option value="Makkah" > Makkah </option>
+<option value="Egypt" > Egypt </option>
+</select>
+<br><br>
 
 <!-- Enter Time zone difference:* <input type="text" name="timezone" > <br> --> 
 <!-- Enter Daylight savings:* <input type="text" name="dst" required> <br> --> 
@@ -56,14 +66,16 @@ Enter longitude: <input type="text" name="long"> <br>
 <input type="radio" name="choice" id="week" value="week"> 7 days <br>
 <input type="radio" name="choice" id="month" value="month"> 30 days <br>
 
-
-
-<! -- Enter Monthwise: <input type="text" name="is_month"> <br>
-<! -- Enter Day wise: <input type="text" name="is_day"> <br>
-<! --Enter Weekwise savings: <input type="text" name="is_week"> <br>
-
+<!-- Enter Monthwise: <input type="text" name="is_month"> <br> --!>
+<!-- Enter Day wise: <input type="text" name="is_day"> <br> --!>
+<!--Enter Weekwise savings: <input type="text" name="is_week"> <br> --!>
+<br>
 Select date: <input type="date" value={{ queryDate }} name="SalahDate" >
+<br>
+<br>
 <input type="submit">
+</div>
+
 </form>
 
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
