@@ -26,4 +26,3 @@ uritemplate==4.1.1
 urllib3==1.26.14
 pandas==1.4.4
 geonamescache==1.5.0
-geopy==2.3.0
